@@ -48,7 +48,7 @@ pause;
 
 % Scale features and set them to zero mean
 fprintf('Normalizing Features ...\n');
-
+X_orig = X
 [X mu sigma] = featureNormalize(X);
 
 % Add intercept term to X
@@ -79,11 +79,17 @@ X = [ones(m, 1) X];
 % Hint: At prediction, make sure you do the same feature normalization.
 %
 
+fprintf('\nTesting the cost function ...\n')
+% compute and display initial cost
+J = computeCost(X, y, [300000;100000;-6001]);
+fprintf('With theta = [0 ; 0 ; 0]\nCost computed = %f\n', J);
+fprintf('Expected cost value (approx)\n');
+
 fprintf('Running gradient descent ...\n');
 
 % Choose some alpha value
-alpha = 0.01;
-num_iters = 400;
+alpha = 0.5;
+num_iters = 50;
 
 % Init Theta and Run Gradient Descent 
 theta = zeros(3, 1);
@@ -105,7 +111,9 @@ fprintf('\n');
 % Recall that the first column of X is all-ones. Thus, it does
 % not need to be normalized.
 price = 0; % You should change this
-
+X_probe = ([1650 3] - mu) ./ sigma;
+X_probe = [1 X_probe];
+price = X_probe * theta;
 
 % ============================================================
 
@@ -150,7 +158,8 @@ fprintf('\n');
 % Estimate the price of a 1650 sq-ft, 3 br house
 % ====================== YOUR CODE HERE ======================
 price = 0; % You should change this
-
+X_probe = [1 1650 3]
+price = X_probe * theta;
 
 % ============================================================
 

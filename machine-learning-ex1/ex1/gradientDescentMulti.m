@@ -20,7 +20,10 @@ for iter = 1:num_iters
 
 
 
-
+    theta = theta - alpha * (1/m) * (X' * (X * theta - y)) ;
+    J =      computeCost(X, y, theta);
+    %sprintf("Iter %d: J = %f", iter, J), disp(theta), sprintf('\n');
+    %pause(1);
 
 
 
@@ -30,7 +33,7 @@ for iter = 1:num_iters
     % ============================================================
 
     % Save the cost J in every iteration    
-    J_history(iter) = computeCostMulti(X, y, theta);
+    J_history(iter) = J;
 
 end
 
