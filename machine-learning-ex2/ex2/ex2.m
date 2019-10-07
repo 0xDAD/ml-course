@@ -83,7 +83,7 @@ fprintf(' %f \n', grad);
 fprintf('Expected gradients (approx):\n 0.043\n 2.566\n 2.647\n');
 
 fprintf('\nProgram paused. Press enter to continue.\n');
-pause;
+kbhit   ;
 
 
 %% ============= Part 3: Optimizing using fminunc  =============
