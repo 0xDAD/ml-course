@@ -62,26 +62,42 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
-A1 = [ones(m, 1) X]; %  m x l1_size + 1
+Y = full(sparse (1:rows (y), y, 1) ); % m x s3
 
-Z2 = Theta1 * A1'; % l2_size x m
+A1 = [ones(m, 1) X]; %  m x s1 + 1
 
-A2 = [ones(m, 1) sigmoid(Z2')]; % m x l2_size + 1
+Z2 = Theta1 * A1'; % s2 x m
 
-Z3 = Theta2 * A2'; % l3_size x m
+A2 = [ones(m, 1) sigmoid(Z2')]; % m x s2 + 1
 
-A3 = sigmoid(Z3'); % m x l3_size
+Z3 = Theta2 * A2'; % s3 x m
+
+A3 = sigmoid(Z3'); % m x s3
+
+G = A3 ;
+LL = log(G); % m x s3
+LR = log(1 - G); % m x s3
+ % Tg = theta;
+ % Tg(1, 1) = 0;
+ % R = (Tg' * Tg) * lambda / (2 * m);
+
+for i = 1:m
+  LLi = LL(i, :); % 1,k
+  LRi = LR(i, :); % 1,k
+  Yi =  Y(i, :) ; % 1,k
+  J = J + (LLi * Yi' + LRi * (1 - Yi')) ;  
+end
+% remove bias column
+  T1 = Theta1(:, 2:end);
+  T2 = Theta2(:, 2:end);
+  R = (sumsq(T1(:)) + sumsq(T2(:))) * lambda / (2 * m);
+
+  J = - (J / m) + R;
 
 
- G = A3;
- LL = log(G);
- LR = log(1 - G);
-   % Tg = theta;
-   % Tg(1, 1) = 0;
 
-   % R = (Tg' * Tg) * lambda / (2 * m);
 
-   % J = -(LL' * y + LR' * (1 - y)) / m + R;
+
 
 
 
