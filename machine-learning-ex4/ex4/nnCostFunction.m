@@ -62,57 +62,60 @@ Theta2_grad = zeros(size(Theta2));
 %               and Theta2_grad from Part 2.
 %
 
-Y = full(sparse (1:rows (y), y, 1) ); % m x s3
+Y = full(sparse (1:rows (y), y, 1) ); % m,s3
 
-A1 = [ones(m, 1) X]; %  m x s1 + 1
+A1 = [ones(m, 1) X]; %  m,s1 + 1
 
-Z2 = Theta1 * A1'; % s2 x m
+Z2 = Theta1 * A1'; % s2,m
 
-A2 = [ones(m, 1) sigmoid(Z2')]; % m x s2 + 1
+A2 = [ones(m, 1) sigmoid(Z2')]; % m,s2 + 1
 
-Z3 = Theta2 * A2'; % s3 x m
+Z3 = Theta2 * A2'; % s3,m
 
-A3 = sigmoid(Z3'); % m x s3
+A3 = sigmoid(Z3'); % m,s3
 
 G = A3 ;
-LL = log(G); % m x s3
-LR = log(1 - G); % m x s3
+LL = log(G); % m,s3
+LR = log(1 - G); % m,s3
  % Tg = theta;
  % Tg(1, 1) = 0;
  % R = (Tg' * Tg) * lambda / (2 * m);
 
 for i = 1:m
+  % calculate i-th component of the Cost
   LLi = LL(i, :); % 1,k
   LRi = LR(i, :); % 1,k
   Yi =  Y(i, :) ; % 1,k
   J = J + (LLi * Yi' + LRi * (1 - Yi')) ;  
+
+  % calculate backprop   ( Theta1 size s2,s1+1    Theta2 size k,s2+1 )
+  A3i = A3(i, :); % 1,k
+  d3 = A3i - Yi; % 1,k
+  A2i = A2(i, :); % 1,s2+1
+  
+  gA2i = A2i' .* (1-A2i'); % s2 + 1, 1  ------> derivative of A2i
+  d2 = (Theta2' * d3') .* gA2i;   % s2 + 1,1
+  d2 = d2(2:end) ; % s2,1
+  %d2(1) = 0;
+  A1i = A1(i, :); % 1,s1+1
+
+  Theta1_grad = Theta1_grad + d2 * A1i;
+  Theta2_grad = Theta2_grad + d3' * A2i;    
 end
-% remove bias column
-  T1 = Theta1(:, 2:end);
-  T2 = Theta2(:, 2:end);
+
+% zero bias column
+T1 = [zeros(size(Theta1, 1),1) Theta1(:, 2:end)];
+T2 = [zeros(size(Theta2, 1),1) Theta2(:, 2:end)];
+
+
+Theta1_grad = Theta1_grad ./ m + T1.*(lambda/m);
+Theta2_grad = Theta2_grad ./ m + T2.*(lambda/m);
+
+
+% calculate regularization
   R = (sumsq(T1(:)) + sumsq(T2(:))) * lambda / (2 * m);
 
   J = - (J / m) + R;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 % -------------------------------------------------------------
 
@@ -120,6 +123,5 @@ end
 
 % Unroll gradients
 grad = [Theta1_grad(:) ; Theta2_grad(:)];
-
 
 end
