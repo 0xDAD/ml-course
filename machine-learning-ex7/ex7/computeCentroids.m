@@ -27,7 +27,13 @@ centroids = zeros(K, n);
 %
 
 
-
+for k = 1:K
+    filter = idx == k;
+    num_of_klasse = sum(filter);
+    if num_of_klasse != 0
+        centroids(k,:) = sum(X .* filter) / num_of_klasse;
+    end
+end
 
 
 
