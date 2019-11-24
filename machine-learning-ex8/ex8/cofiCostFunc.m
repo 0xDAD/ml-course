@@ -7,9 +7,9 @@ function [J, grad] = cofiCostFunc(params, Y, R, num_users, num_movies, ...
 %
 
 % Unfold the U and W matrices from params
-X = reshape(params(1:num_movies*num_features), num_movies, num_features);
+X = reshape(params(1:num_movies*num_features), num_movies, num_features); % num_movies * num_features
 Theta = reshape(params(num_movies*num_features+1:end), ...
-                num_users, num_features);
+                num_users, num_features); % num_users * num_features
 
             
 % You need to return the following values correctly
@@ -40,6 +40,16 @@ Theta_grad = zeros(size(Theta));
 %                     partial derivatives w.r.t. to each element of Theta
 %
 
+inner_diff = (X * Theta' - Y); %num_movies x num_users
+
+J = sumsq(inner_diff(R == 1)) / 2 + (sum(sumsq(Theta)) + sum(sumsq(X))) *(lambda / 2);
+
+inner_diff(R == 0) = 0;
+
+X_grad = inner_diff * Theta + lambda * X;
+Theta_grad = inner_diff' * X + lambda * Theta;
+
+grad = [X_grad(:) ; Theta_grad(:)];
 
 
 
